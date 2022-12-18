@@ -1,10 +1,11 @@
-import { ActivityIndicator, StyleSheet } from 'react-native';
+import { ActivityIndicator, StyleSheet, FlatList } from "react-native";
 
-import EditScreenInfo from '../components/EditScreenInfo';
-import { Text, View } from '../components/Themed';
-import { RootTabScreenProps } from '../types';
+import EditScreenInfo from "../components/EditScreenInfo";
+import { Text, View } from "../components/Themed";
+import { RootTabScreenProps } from "../types";
 
-import { gql, useQuery } from '@apollo/client';
+import { gql, useQuery } from "@apollo/client";
+import BookItem from "../components/BookItem";
 
 const query = gql`
   query SearchBooks($q: String) {
@@ -38,18 +39,31 @@ const query = gql`
   }
 `;
 export default function TabOneScreen() {
+  const { data, loading, error } = useQuery(query, { variables: { q: "React Native" } });
 
-  const {data, loading, error} = useQuery(query, {variables: {q: ""}});
-  
   return (
     <View style={styles.container}>
-      {loading && <ActivityIndicator/> }
+      {loading && <ActivityIndicator />}
       {error && (
         <View style={styles.container}>
           <Text style={styles.title}>Error fetching books</Text>
           <Text>{error.message}</Text>
         </View>
       )}
+      <FlatList
+        data={data?.googleBooksSearch?.items || []}
+        showsVerticalScrollIndicator={false}
+        renderItem={({ item }) => (
+          <BookItem
+            book={{
+              image: item?.volumeInfo?.imageLinks?.thumbnail,
+              title: item?.volumeInfo?.title,
+              authors: [item?.volumeInfo?.authors],
+              isbn: item?.volumeInfo?.industryIdentifiers[0].identifier,
+            }}
+          />
+        )}
+      />
     </View>
   );
 }
@@ -57,16 +71,15 @@ export default function TabOneScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    padding: 10
   },
   title: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   separator: {
     marginVertical: 30,
     height: 1,
-    width: '80%',
+    width: "80%",
   },
 });
