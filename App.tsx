@@ -1,14 +1,15 @@
-import { StatusBar } from 'expo-status-bar';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { StatusBar } from "expo-status-bar";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
-import useCachedResources from './hooks/useCachedResources';
-import useColorScheme from './hooks/useColorScheme';
-import Navigation from './navigation';
+import useCachedResources from "./hooks/useCachedResources";
+import useColorScheme from "./hooks/useColorScheme";
+import Navigation from "./navigation";
+import MyBooksProvider from "./context/MyBooksProvider";
 
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 
-
-const API_KEY = "mounteliza::stepzen.net+1000::46da93dc5972b3c5f265ba6b206c4d481c41e0a25bee9ee06a4582780a955968";
+const API_KEY =
+  "mounteliza::stepzen.net+1000::46da93dc5972b3c5f265ba6b206c4d481c41e0a25bee9ee06a4582780a955968";
 
 // Initialize Apollo Client
 const client = new ApolloClient({
@@ -29,9 +30,11 @@ export default function App() {
     return (
       <SafeAreaProvider>
         <ApolloProvider client={client}>
-          <Navigation colorScheme={colorScheme} />
-          <StatusBar />
+          <MyBooksProvider>
+            <Navigation colorScheme={colorScheme} />
+          </MyBooksProvider>
         </ApolloProvider>
+        <StatusBar />
       </SafeAreaProvider>
     );
   }
